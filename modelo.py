@@ -4,7 +4,14 @@ Calcula el plan de compras óptimo usando PuLP given un nivel de colchón de seg
 """
 
 import pulp
-from config import productos, meses, costo_compra, costo_guardar, penalizacion, capacidad_bodega, demanda
+import config
+productos = config.productos
+meses = config.meses
+costo_compra = config.costo_compra
+costo_guardar = config.costo_guardar
+penalizacion = config.penalizacion
+capacidad_bodega = config.capacidad_bodega
+demanda = config.DATOS_ENUNCIADO.demanda
 
 
 def calcular_plan(colchon):

@@ -4,7 +4,12 @@ Simula escenarios de demanda con variación ±20% para calibrar el inventario de
 """
 
 import random
-from config import productos, meses, costo_guardar, penalizacion, demanda
+import config
+productos = config.productos
+meses = config.meses
+costo_guardar = config.costo_guardar
+penalizacion = config.penalizacion
+demanda = config.DATOS_ENUNCIADO.demanda
 
 
 def simular_un_escenario(politica, colchon):
