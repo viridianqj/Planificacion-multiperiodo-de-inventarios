@@ -5,6 +5,7 @@ Datos y parámetros del ejercicio de planificación de inventarios.
 
 from dataclasses import dataclass
 
+
 @dataclass
 class Datos:
     productos: list
@@ -34,7 +35,7 @@ DATOS_ENUNCIADO = Datos(
     capacidad_bodega=800,
 )
 
-# Exportación de variables para compatibilidad con imports directos
+# Variables de nivel de módulo para compatibilidad con imports directos
 productos = ["p1", "p2", "p3", "p4"]
 meses = [1, 2, 3]
 costo_compra = {"p1": 50, "p2": 80, "p3": 30, "p4": 100}
