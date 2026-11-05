@@ -1,0 +1,1 @@
+"""Gráficas del proyecto (matplotlib)."""

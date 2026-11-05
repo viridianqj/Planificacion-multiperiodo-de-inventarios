@@ -1,21 +1,32 @@
-"""
-MODELO DE PROGRAMACIÓN LINEAL PARA INVENTARIOS
-Calcula el plan de compras óptimo usando PuLP given un nivel de colchón de seguridad.
-"""
+"""PARTE 1: el plan de compras más barato, con programación lineal (PuLP)."""
 
 import pulp
-import config
+
+def crear_variable(problema, nombre):
+    """
+    Crea una variable que nunca puede ser negativa.
+    PuLP 4.x las crea desde el problema (problema.add_variable);
+    PuLP 3.x y anteriores usan pulp.LpVariable. Así el código sirve con las dos.
+    """
+    if hasattr(problema, "add_variable"):
+        return problema.add_variable(nombre, lowBound=0)
+    return pulp.LpVariable(nombre, lowBound=0)
+
+
+def crear_solver():
+    """
+    El solver es el programa que resuelve las ecuaciones.
+    PuLP 3.x y anteriores traen CBC incluido; PuLP 4.x usa HiGHS (pip install highspy).
+    """
+    if hasattr(pulp, "PULP_CBC_CMD"):
+        return pulp.PULP_CBC_CMD(msg=0)
+    return pulp.HiGHS(msg=False)
 
 
 def calcular_plan(colchon, datos):
     """
-    Calcula el plan de compras más barato usando Programación Lineal.
-
-    Recibe el 'colchon' (por ejemplo 0.12 = guardar 12% extra de lo que
+    Recibe el "colchon" (por ejemplo 0.12 = guardar 12% extra de lo que
     se venderá el mes siguiente) y devuelve el plan de compras más barato.
-
-    Returns:
-        tuple: (plan_compras, plan_guardado, costo_total)
     """
     productos, meses = datos.productos, datos.meses
 
@@ -28,9 +39,9 @@ def calcular_plan(colchon, datos):
     faltante = {}    # unidades que me faltaron
     for p in productos:
         for m in meses:
-            compras[p, m] = pulp.LpVariable(f"compra_{p}_{m}", lowBound=0)
-            guardado[p, m] = pulp.LpVariable(f"guardado_{p}_{m}", lowBound=0)
-            faltante[p, m] = pulp.LpVariable(f"faltante_{p}_{m}", lowBound=0)
+            compras[p, m] = crear_variable(problema, f"compra_{p}_{m}")
+            guardado[p, m] = crear_variable(problema, f"guardado_{p}_{m}")
+            faltante[p, m] = crear_variable(problema, f"faltante_{p}_{m}")
 
     # ---- LO QUE QUEREMOS MINIMIZAR: el costo total ----
     # Un faltante cuesta (compra + penalización) porque hay que comprar
@@ -91,13 +102,3 @@ def calcular_plan(colchon, datos):
         plan_guardado[p] = [round(guardado[p, m].value()) for m in meses]
 
     return plan_compras, plan_guardado, pulp.value(problema.objective)
-
-
-def crear_solver():
-    """
-    El solver es el programa que resuelve las ecuaciones.
-    PuLP 3.x y anteriores traen CBC incluido; PuLP 4.x usa HiGHS (pip install highspy).
-    """
-    if hasattr(pulp, "PULP_CBC_CMD"):
-        return pulp.PULP_CBC_CMD(msg=0)
-    return pulp.HiGHS(msg=False)
